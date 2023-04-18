@@ -1,16 +1,52 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as glob from '@actions/glob'
+import * as jsyaml from 'js-yaml'
+import { readFileSync } from 'fs'
+import FormData from 'form-data'
+import axios, {AxiosError} from 'axios';
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const apiKey: string = core.getInput('api_key', { required: true });
+    const files: string = core.getInput('files', { required: true });
+    const apiUrl: string = core.getInput('api_url');
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const parsedFiles = jsyaml.load(files) as string[];
+    const allFiles: string[] = [];
+    for (const file of parsedFiles) {
+      const globber = await glob.create(file);
+      for await (const file of globber.globGenerator()) {
+        allFiles.push(file);
+      }
+    }
 
-    core.setOutput('time', new Date().toTimeString())
+    core.debug(`allFiles: ${allFiles}`);
+
+    const formData = new FormData();
+    for (const file of allFiles) {
+      const fileContent = readFileSync(file, 'utf-8');
+      core.debug(`fileContent: ${fileContent}`);
+      formData.append('inputFiles', fileContent, { filename: file, contentType: 'application/xml' });
+    }
+
+    let statusCode;
+    try {
+      const response = await axios.post(apiUrl, formData, {
+        headers: {
+          ...formData.getHeaders(),
+          'X-Api-Key': apiKey,
+        },
+      });
+      statusCode = response.status;
+    } catch (error) {
+      core.debug(`error: ${error}`);
+      if (axios.isAxiosError(error))  {
+        statusCode = error.response?.status;
+      } else {
+        throw error;
+      }
+    }
+    core.setOutput('status_code', statusCode);
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

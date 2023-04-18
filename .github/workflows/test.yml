@@ -23,4 +23,4 @@ jobs:
         with:
           api_key: 5
           files: |
-            - report.xml
+            - outputs/*.xml

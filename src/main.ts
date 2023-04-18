@@ -20,12 +20,11 @@ async function run(): Promise<void> {
       }
     }
 
-    core.debug(`allFiles: ${allFiles}`)
+    core.info(`Sending these files: ${allFiles}`)
 
     const formData = new FormData()
     for (const file of allFiles) {
       const fileContent = readFileSync(file, 'utf-8')
-      core.debug(`fileContent: ${fileContent}`)
       formData.append('inputFiles', fileContent, {
         filename: file,
         contentType: 'application/xml'
@@ -49,6 +48,7 @@ async function run(): Promise<void> {
         throw error
       }
     }
+    core.info(`Hatchways API responded with status code: ${statusCode}`)
     core.setOutput('status_code', statusCode)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)

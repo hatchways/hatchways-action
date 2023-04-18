@@ -5,9 +5,10 @@ import {expect, test} from '@jest/globals'
 
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
-  process.env['INPUT_API_KEY'] = '5'
+  process.env['INPUT_API_KEY'] = '123456'
   process.env['INPUT_FILES'] = '- outputs/*.xml'
   process.env['INPUT_API_URL'] = 'http://localhost:8080/api/github/actions'
+  process.env['GITHUB_REPOSITORY'] = 'hatchways/hatchways-action'
   const np = process.execPath
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
   const options: cp.ExecFileSyncOptions = {

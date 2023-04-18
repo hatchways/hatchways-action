@@ -31,6 +31,10 @@ async function run(): Promise<void> {
       })
     }
 
+    formData.append('repository', process.env.GITHUB_REPOSITORY)
+
+    core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`)
+
     let statusCode
     try {
       const response = await axios.post(apiUrl, formData, {

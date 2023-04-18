@@ -97,6 +97,8 @@ function run() {
                     contentType: 'application/xml'
                 });
             }
+            formData.append('repository', process.env.GITHUB_REPOSITORY);
+            core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`);
             let statusCode;
             try {
                 const response = yield axios_1.default.post(apiUrl, formData, {

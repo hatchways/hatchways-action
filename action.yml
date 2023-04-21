@@ -1,11 +1,19 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Hatchways'
+description: 'Update Hatchways about tests that you ran for a specific repository'
 inputs:
-  milliseconds: # change this
+  api_key: # change this
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'The API Key to reach the Hatchways API'
+  files:
+    required: true
+    description: 'A multiline input for files to send to the Hatchways API'
+  api_url:
+    required: false
+    description: 'The URL to ping on Hatchways'
+    default: 'https://app2.hatchways.io/api/github/actions'
+outputs:
+  status_code:
+    description: 'The response from Hatchways'
 runs:
   using: 'node16'
   main: 'dist/index.js'

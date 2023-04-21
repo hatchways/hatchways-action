@@ -21,4 +21,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: ./
         with:
-          milliseconds: 1000
+          api_key: 123456
+          files: |
+            - outputs/*.xml
+          api_url: https://master-dot-hatchways-staging.uc.r.appspot.com/api/github/actions

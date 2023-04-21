@@ -90,14 +90,17 @@ function run() {
             }
             core.notice(`Sending these files to Hatchways: ${allFiles}`);
             const formData = new form_data_1.default();
+            let i = 0;
             for (const file of allFiles) {
                 const fileContent = (0, fs_1.readFileSync)(file, 'utf-8');
-                formData.append('inputFiles', fileContent, {
+                formData.append(`file${i}`, fileContent, {
                     filename: file,
                     contentType: 'application/xml'
                 });
+                i += 1;
             }
-            formData.append('repository', process.env.GITHUB_REPOSITORY);
+            formData.append('repository', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`);
+            formData.append('pipelineUrl', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
             core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`);
             let statusCode;
             try {

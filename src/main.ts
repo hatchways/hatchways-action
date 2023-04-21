@@ -23,15 +23,24 @@ async function run(): Promise<void> {
     core.notice(`Sending these files to Hatchways: ${allFiles}`)
 
     const formData = new FormData()
+    let i = 0
     for (const file of allFiles) {
       const fileContent = readFileSync(file, 'utf-8')
-      formData.append('inputFiles', fileContent, {
+      formData.append(`file${i}`, fileContent, {
         filename: file,
         contentType: 'application/xml'
       })
+      i += 1
     }
 
-    formData.append('repository', process.env.GITHUB_REPOSITORY)
+    formData.append(
+      'repository',
+      `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`
+    )
+    formData.append(
+      'pipelineUrl',
+      `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    )
 
     core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`)
 

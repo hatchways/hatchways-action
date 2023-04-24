@@ -105,7 +105,7 @@ function run() {
             let statusCode;
             try {
                 const response = yield axios_1.default.post(apiUrl, formData, {
-                    headers: Object.assign(Object.assign({}, formData.getHeaders()), { 'X-Api-Key': apiKey })
+                    headers: Object.assign(Object.assign({}, formData.getHeaders()), { 'Hatchways-Action-Api-Key': apiKey })
                 });
                 statusCode = response.status;
             }

@@ -49,7 +49,7 @@ async function run(): Promise<void> {
       const response = await axios.post(apiUrl, formData, {
         headers: {
           ...formData.getHeaders(),
-          'X-Api-Key': apiKey
+          'Hatchways-Action-Api-Key': apiKey
         }
       })
       statusCode = response.status

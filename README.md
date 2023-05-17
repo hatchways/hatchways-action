@@ -33,7 +33,7 @@ You can use glob patterns to specify many different files in a single entry of t
 Here is an example of what the `hatchways-action` section of the GitHub Actions file could look like:
 
 ```yaml
-- uses: hatchways/hatchways-action@main
+- uses: hatchways/hatchways-action@v1
   if: always()
   with:
     api_key: ${{ secrets.HATCHWAYS_API_KEY }}
@@ -53,7 +53,7 @@ Here is an example of what a GitHub Actions file might look like if it's running
 - name: Run tests
   if: always()
   run: jest --verbose --reporters=default --reporters=jest-junit
-- uses: hatchways/hatchways-action@main
+- uses: hatchways/hatchways-action@v1
   if: always()
   with:
     api_key: ${{ secrets.HATCHWAYS_API_KEY }}
@@ -68,7 +68,7 @@ Here is an example of what a GitHub Actions file might look like if it was runni
 ```yaml
 - name: Run tests
   run: pytest tests/ -v --junitxml="test-results/result.xml"
-- uses: hatchways/hatchways-action@main
+- uses: hatchways/hatchways-action@v1
   if: always()
   with:
     api_key: ${{ secrets.HATCHWAYS_API_KEY }}

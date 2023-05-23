@@ -1,137 +1,6 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 3109:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __asyncValues = (this && this.__asyncValues) || function (o) {
-    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
-    var m = o[Symbol.asyncIterator], i;
-    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
-    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
-    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__nccwpck_require__(2186));
-const glob = __importStar(__nccwpck_require__(8090));
-const jsyaml = __importStar(__nccwpck_require__(1917));
-const fs_1 = __nccwpck_require__(7147);
-const form_data_1 = __importDefault(__nccwpck_require__(4334));
-const axios_1 = __importStar(__nccwpck_require__(8757));
-function run() {
-    var _a, e_1, _b, _c;
-    var _d;
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const apiKey = core.getInput('api_key', { required: true });
-            const files = core.getInput('files', { required: true });
-            const apiUrl = core.getInput('api_url');
-            const parsedFiles = jsyaml.load(files);
-            const allFiles = [];
-            for (const fileName of parsedFiles) {
-                const globber = yield glob.create(fileName);
-                try {
-                    for (var _e = true, _f = (e_1 = void 0, __asyncValues(globber.globGenerator())), _g; _g = yield _f.next(), _a = _g.done, !_a;) {
-                        _c = _g.value;
-                        _e = false;
-                        try {
-                            const file = _c;
-                            allFiles.push(file);
-                        }
-                        finally {
-                            _e = true;
-                        }
-                    }
-                }
-                catch (e_1_1) { e_1 = { error: e_1_1 }; }
-                finally {
-                    try {
-                        if (!_e && !_a && (_b = _f.return)) yield _b.call(_f);
-                    }
-                    finally { if (e_1) throw e_1.error; }
-                }
-            }
-            core.notice(`Sending these files to Hatchways: ${allFiles}`);
-            const formData = new form_data_1.default();
-            let i = 0;
-            for (const file of allFiles) {
-                const fileContent = (0, fs_1.readFileSync)(file, 'utf-8');
-                formData.append(`file${i}`, fileContent, {
-                    filename: file,
-                    contentType: 'application/xml'
-                });
-                i += 1;
-            }
-            formData.append('repository', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`);
-            formData.append('pipelineUrl', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
-            core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`);
-            let statusCode;
-            try {
-                const response = yield axios_1.default.post(apiUrl, formData, {
-                    headers: Object.assign(Object.assign({}, formData.getHeaders()), { 'Hatchways-Action-Api-Key': apiKey })
-                });
-                statusCode = response.status;
-            }
-            catch (error) {
-                core.debug(`error: ${error}`);
-                if ((0, axios_1.isAxiosError)(error)) {
-                    statusCode = (_d = error.response) === null || _d === void 0 ? void 0 : _d.status;
-                }
-                else {
-                    throw error;
-                }
-            }
-            core.notice(`Hatchways API responded with status code: ${statusCode}`);
-            core.setOutput('status_code', statusCode);
-        }
-        catch (error) {
-            if (error instanceof Error)
-                core.setFailed(error.message);
-        }
-    });
-}
-run();
-
-
-/***/ }),
-
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -12816,6 +12685,137 @@ exports["default"] = _default;
 
 /***/ }),
 
+/***/ 399:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const core = __importStar(__nccwpck_require__(2186));
+const glob = __importStar(__nccwpck_require__(8090));
+const jsyaml = __importStar(__nccwpck_require__(1917));
+const fs_1 = __nccwpck_require__(7147);
+const form_data_1 = __importDefault(__nccwpck_require__(4334));
+const axios_1 = __importStar(__nccwpck_require__(8757));
+function run() {
+    var _a, e_1, _b, _c;
+    var _d;
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const apiKey = core.getInput('api_key', { required: true });
+            const files = core.getInput('files', { required: true });
+            const apiUrl = core.getInput('api_url');
+            const parsedFiles = jsyaml.load(files);
+            const allFiles = [];
+            for (const fileName of parsedFiles) {
+                const globber = yield glob.create(fileName);
+                try {
+                    for (var _e = true, _f = (e_1 = void 0, __asyncValues(globber.globGenerator())), _g; _g = yield _f.next(), _a = _g.done, !_a;) {
+                        _c = _g.value;
+                        _e = false;
+                        try {
+                            const file = _c;
+                            allFiles.push(file);
+                        }
+                        finally {
+                            _e = true;
+                        }
+                    }
+                }
+                catch (e_1_1) { e_1 = { error: e_1_1 }; }
+                finally {
+                    try {
+                        if (!_e && !_a && (_b = _f.return)) yield _b.call(_f);
+                    }
+                    finally { if (e_1) throw e_1.error; }
+                }
+            }
+            core.notice(`Sending these files to Hatchways: ${allFiles}`);
+            const formData = new form_data_1.default();
+            let i = 0;
+            for (const file of allFiles) {
+                const fileContent = (0, fs_1.readFileSync)(file, 'utf-8');
+                formData.append(`file${i}`, fileContent, {
+                    filename: file,
+                    contentType: 'application/xml'
+                });
+                i += 1;
+            }
+            formData.append('repository', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`);
+            formData.append('pipelineUrl', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
+            core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`);
+            let statusCode;
+            try {
+                const response = yield axios_1.default.post(apiUrl, formData, {
+                    headers: Object.assign(Object.assign({}, formData.getHeaders()), { 'Hatchways-Action-Api-Key': apiKey })
+                });
+                statusCode = response.status;
+            }
+            catch (error) {
+                core.debug(`error: ${error}`);
+                if ((0, axios_1.isAxiosError)(error)) {
+                    statusCode = (_d = error.response) === null || _d === void 0 ? void 0 : _d.status;
+                }
+                else {
+                    throw error;
+                }
+            }
+            core.notice(`Hatchways API responded with status code: ${statusCode}`);
+            core.setOutput('status_code', statusCode);
+        }
+        catch (error) {
+            if (error instanceof Error)
+                core.setFailed(error.message);
+        }
+    });
+}
+run();
+
+
+/***/ }),
+
 /***/ 9491:
 /***/ ((module) => {
 
@@ -17192,7 +17192,7 @@ module.exports = JSON.parse('{"application/1d-interleaved-parityfec":{"source":"
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(3109);
+/******/ 	var __webpack_exports__ = __nccwpck_require__(399);
 /******/ 	module.exports = __webpack_exports__;
 /******/ 	
 /******/ })()

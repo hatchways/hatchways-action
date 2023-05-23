@@ -14,7 +14,7 @@ Sending the test results to the Hatchways Platform allows you to see the integra
 
 This key-value pair should always be added. Otherwise, if the tests fail, the action will stop. By adding this, you can make sure that the results of the tests are always sent to the Hatchways Platform, even if the tests fail.
 
-### `where`
+### `with`
 
 #### `api_key`
 

@@ -73,7 +73,7 @@ Here is an example of what a GitHub Actions file might look like if it was runni
   with:
     api_key: ${{ secrets.HATCHWAYS_API_KEY }}
     files: |
-      - test-results/*.xml # this can be glob format, just showing that here
+      - test-results/api-tests.xml
 ```
 
 ## Official Docs

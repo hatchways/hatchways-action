@@ -6,7 +6,7 @@
 
 This actions sends test result JUnit XML files to the Hatchways Platform.
 
-Sending the test results to the Hatchways Platform allows you to see the integrated results in the same place where you're making decisions about candidates, a opposed to having to log into GitHub. It also allows you the ability to automate decisions about a candidate based on those test results (for example to move them forward or not in the hiring process).
+Sending the test results to the Hatchways Platform allows you to see the integrated results in the same place where you're making decisions about candidates, as opposed to having to log into GitHub. It also allows you the ability to automate decisions about a candidate based on those test results (for example, to move them forward or not in the hiring process).
 
 ## Required Inputs
 
@@ -18,7 +18,7 @@ This key-value pair should always be added. Otherwise, if the tests fail, the ac
 
 #### `api_key`
 
-The value of the `api_key` will always be `${{ secrets.HATCHWAYS_API_KEY }}`.
+The value of the `api_key` should always be `${{ secrets.HATCHWAYS_API_KEY }}`.
 
 This key is automatically added to the repository created when a candidate submits their assessment for review. For more information about this kind of automatically created repository, read the "Candidate Repositories and Marking Repositories" section in the [official platform documentation](https://docs.hatchways.io/docs/automating-an-assessment#4-optional-display-automated-tests-results-in-the-hatchways-platform).
 

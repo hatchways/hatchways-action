@@ -1,7 +1,7 @@
 name: 'Hatchways'
 description: 'Update Hatchways about tests that you ran for a specific repository'
 inputs:
-  api_key: # change this
+  api_key:
     required: true
     description: 'The API Key to reach the Hatchways API'
   files:

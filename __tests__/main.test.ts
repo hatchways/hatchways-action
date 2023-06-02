@@ -11,6 +11,7 @@ test('test runs', () => {
   process.env['GITHUB_REPOSITORY'] = 'hatchways/hatchways-action'
   process.env['GITHUB_SERVER_URL'] = 'https://github.com'
   process.env['GITHUB_RUN_ID'] = '1'
+  process.env['GITHUB_SHA'] = 'abcdef'
 
   const np = process.execPath
   const ip = path.join(__dirname, '..', 'lib', 'main.js')

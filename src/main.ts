@@ -41,6 +41,7 @@ async function run(): Promise<void> {
       'pipelineUrl',
       `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
     )
+    formData.append('commitSha', process.env.GITHUB_SHA)
 
     core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`)
 

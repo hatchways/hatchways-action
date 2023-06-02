@@ -101,6 +101,7 @@ function run() {
             }
             formData.append('repository', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`);
             formData.append('pipelineUrl', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
+            formData.append('commitSha', process.env.GITHUB_SHA);
             core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`);
             let statusCode;
             try {

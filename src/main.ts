@@ -1,5 +1,7 @@
 import * as core from '@actions/core'
+import * as github from '@actions/github'
 import * as glob from '@actions/glob'
+import {PullRequestEvent, PushEvent} from '@octokit/webhooks-types'
 import * as jsyaml from 'js-yaml'
 import {readFileSync} from 'fs'
 import FormData from 'form-data'
@@ -41,6 +43,21 @@ async function run(): Promise<void> {
       'pipelineUrl',
       `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
     )
+
+    let commitSha = null
+    if (github.context.eventName === 'pull_request') {
+      commitSha = (github.context.payload as PullRequestEvent).pull_request.head
+        .sha
+    } else if (github.context.eventName === 'push') {
+      commitSha = (github.context.payload as PushEvent).after
+    } else {
+      core.setFailed(
+        'Only `push` and `pull_request` workflow triggers are supported by the Hatchways GitHub action.'
+      )
+      return
+    }
+
+    formData.append('commitSha', commitSha)
 
     core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`)
 

@@ -103,19 +103,23 @@ function run() {
             formData.append('repository', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}`);
             formData.append('pipelineUrl', `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`);
             let commitSha = null;
+            let branch = null;
             if (github.context.eventName === 'pull_request') {
                 commitSha = github.context.payload.pull_request.head
                     .sha;
+                branch = process.env.GITHUB_HEAD_REF;
             }
             else if (github.context.eventName === 'push') {
                 commitSha = github.context.payload.after;
+                branch = process.env.GITHUB_REF_NAME;
             }
             else {
                 core.setFailed('Only `push` and `pull_request` workflow triggers are supported by the Hatchways GitHub action.');
                 return;
             }
             formData.append('commitSha', commitSha);
-            core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`);
+            formData.append('branch', branch);
+            core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY} on branch ${branch}`);
             let statusCode;
             try {
                 const response = yield axios_1.default.post(apiUrl, formData, {

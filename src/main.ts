@@ -45,11 +45,14 @@ async function run(): Promise<void> {
     )
 
     let commitSha = null
+    let branch = null
     if (github.context.eventName === 'pull_request') {
       commitSha = (github.context.payload as PullRequestEvent).pull_request.head
         .sha
+      branch = process.env.GITHUB_HEAD_REF
     } else if (github.context.eventName === 'push') {
       commitSha = (github.context.payload as PushEvent).after
+      branch = process.env.GITHUB_REF_NAME
     } else {
       core.setFailed(
         'Only `push` and `pull_request` workflow triggers are supported by the Hatchways GitHub action.'
@@ -58,8 +61,9 @@ async function run(): Promise<void> {
     }
 
     formData.append('commitSha', commitSha)
+    formData.append('branch', branch)
 
-    core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY}`)
+    core.notice(`Updating Hatchways about ${process.env.GITHUB_REPOSITORY} on branch ${branch}`)
 
     let statusCode
     try {
